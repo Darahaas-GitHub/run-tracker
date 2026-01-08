@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Runner Live Tracking</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+<h2>Live Run Tracking</h2>
+<input id="runnerId" placeholder="Bib Number" />
+<button onclick="startTracking()">Start Tracking</button>
+
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyAfOUamkomr0AZORIDCVQVbNOAPLIySYwY",
+  databaseURL: "https://run-tracker-c0934-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
+firebase.initializeApp(firebaseConfig);
+
+function startTracking() {
+  var id = document.getElementById("runnerId").value;
+  navigator.geolocation.watchPosition(pos => {
+    firebase.database().ref("runners/" + id).set({
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
+      time: Date.now()
+    });
+  });
+}
+</script>
+</body>
+</html>
