@@ -37,6 +37,14 @@ function startTracking() {
         });
     }, 5000); // 5000ms = 5 seconds
 }
+  // Example using NoSleep.js
+var noSleep = new NoSleep();
+document.addEventListener('click', function enableNoSleep() {
+  document.removeEventListener('click', enableNoSleep, false);
+  noSleep.enable();
+  // Now the screen will stay on
+}, false);
+
 
 </script>
 </body>
