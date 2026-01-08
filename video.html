@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Looping Video Page</title>
+    <style>
+        /* Optional CSS to make the video fill the screen */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Hide scroll bars if video is full screen */
+            background-color: #000; /* Black background behind video */
+        }
+        video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        Replace 'your_video.mp4' with the path to your video file.
+        The 'muted' attribute is essential for 'autoplay' to work in most modern browsers.
+    -->
+    <video controls autoplay loop muted>
+        <source src="instructions_offline_map.mp4" type="video/mp4">
+        
+        <!-- Optional: Add additional formats for broader compatibility -->
+        <!-- <source src="your_video.webm" type="video/webm"> -->
+
+        <!-- Fallback text for browsers that don't support the video tag -->
+        Your browser does not support the video tag.
+    </video>
+
+</body>
+</html>
