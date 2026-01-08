@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Runner Map</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <style>
+    #map { height: 100vh; }
+  </style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAfOUamkomr0AZORIDCVQVbNOAPLIySYwY",
+  databaseURL: "https://run-tracker-c0934-default-rtdb.asia-southeast1.firebasedatabase.app/"
+});
+
+const map = L.map('map').setView([20.5937, 78.9629], 5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+  .addTo(map);
+
+const markers = {};
+
+firebase.database().ref("runners").on("value", snapshot => {
+  snapshot.forEach(child => {
+    const id = child.key;
+    const d = child.val();
+
+    if (!markers[id]) {
+      markers[id] = L.marker([d.lat, d.lng])
+        .addTo(map)
+        .bindPopup(`Runner ${id}`);
+    } else {
+      markers[id].setLatLng([d.lat, d.lng]);
+    }
+  });
+});
+</script>
+</body>
+</html>
