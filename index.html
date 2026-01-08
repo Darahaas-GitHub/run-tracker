@@ -1,32 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Runner Live Tracking</title>
+  <title>Runner Auto Tracking</title>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
-<h2>Live Run Tracking</h2>
+<h3>Runner Live Tracking</h3>
+
 <input id="runnerId" placeholder="Bib Number" />
-<button onclick="startTracking()">Start Tracking</button>
+<p id="status">Waiting…</p>
 
 <script>
-var firebaseConfig = {
+/* 🔥 FIREBASE CONFIG */
+firebase.initializeApp({
   apiKey: "AIzaSyAfOUamkomr0AZORIDCVQVbNOAPLIySYwY",
   databaseURL: "https://run-tracker-c0934-default-rtdb.asia-southeast1.firebasedatabase.app/"
-};
-firebase.initializeApp(firebaseConfig);
+});
 
-function startTracking() {
-  var id = document.getElementById("runnerId").value;
-  navigator.geolocation.watchPosition(pos => {
-    firebase.database().ref("runners/" + id).set({
-      lat: pos.coords.latitude,
-      lng: pos.coords.longitude,
-      time: Date.now()
-    });
-  });
+let watchId = null;
+const UPDATE_INTERVAL = 10000; // 10 seconds
+let lastUpdate = 0;
+
+function startAutoTracking() {
+  const runnerId = document.getElementById("runnerId").value;
+  if (!runnerId) {
+    alert("Enter Bib Number");
+    return;
+  }
+
+  document.getElementById("status").innerText = "Tracking started…";
+
+  watchId = navigator.geolocation.watchPosition(
+    position => {
+      const now = Date.now();
+      if (now - lastUpdate < UPDATE_INTERVAL) return;
+
+      lastUpdate = now;
+
+      firebase.database().ref("runners/" + runnerId).set({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        speed: position.coords.speed,
+        heading: position.coords.heading,
+        timestamp: now,
+        active: true
+      });
+
+      document.getElementById("status").innerText =
+        "Last update: " + new Date(now).toLocaleTimeString();
+    },
+    error => {
+      document.getElementById("status").innerText =
+        "GPS error. Retrying…";
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 5000,
+      timeout: 15000
+    }
+  );
 }
+
+/* AUTO-START WHEN PAGE LOADS */
+window.onload = () => {
+  setTimeout(startAutoTracking, 1000);
+};
 </script>
 </body>
 </html>
